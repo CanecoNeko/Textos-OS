@@ -61,12 +61,12 @@
     .item-contador {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 8px;
       background: #f8f9fa;
       padding: 10px;
       border: 1px solid #e9ecef;
       border-radius: 5px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .linha-contador {
       display: flex;
@@ -181,66 +181,66 @@
       <!-- ONT -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>ONT</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('ont_qtd', -1)">-</button>
             <span id="ont_qtd" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('ont_qtd', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- ONT -</span>
         </div>
-        <input type="text" id="ont_obs" placeholder="Informação adicional / Nº Série">
+        <input type="text" id="ont_obs" placeholder="Texto adicional (ex: Nº de Série)">
       </div>
 
       <!-- ONU -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>ONU</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('onu_qtd', -1)">-</button>
             <span id="onu_qtd" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('onu_qtd', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- ONU -</span>
         </div>
-        <input type="text" id="onu_obs" placeholder="Informação adicional / Nº Série">
+        <input type="text" id="onu_obs" placeholder="Texto adicional (ex: Nº de Série)">
       </div>
 
       <!-- ROTEADOR 2.0 -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Roteador 2.0</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('rot20_qtd', -1)">-</button>
             <span id="rot20_qtd" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('rot20_qtd', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Roteador 2.0 -</span>
         </div>
-        <input type="text" id="rot20_obs" placeholder="Informação adicional / Nº Série">
+        <input type="text" id="rot20_obs" placeholder="Texto adicional (ex: Nº de Série)">
       </div>
 
       <!-- ROTEADOR 3.0 -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Roteador 3.0</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('rot30_qtd', -1)">-</button>
             <span id="rot30_qtd" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('rot30_qtd', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Roteador 3.0 -</span>
         </div>
-        <input type="text" id="rot30_obs" placeholder="Informação adicional / Nº Série">
+        <input type="text" id="rot30_obs" placeholder="Texto adicional (ex: Nº de Série)">
       </div>
 
       <!-- ROTEADOR 4.0 -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Roteador 4.0</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('rot40_qtd', -1)">-</button>
             <span id="rot40_qtd" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('rot40_qtd', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Roteador 4.0 -</span>
         </div>
-        <input type="text" id="rot40_obs" placeholder="Informação adicional / Nº Série">
+        <input type="text" id="rot40_obs" placeholder="Texto adicional (ex: Nº de Série)">
       </div>
     </div>
 
@@ -422,11 +422,11 @@
         ? document.getElementById('coordManual').value.trim() 
         : coordsGPS;
 
-      // Equipamentos
-      const getEquip = (idQtd, idObs) => {
+      // Monta a linha do equipamento no padrão: ( 00 ) - NOME - ( OBS )
+      const getEquipLinha = (nome, idQtd, idObs) => {
         const q = document.getElementById(idQtd).innerText;
         const o = document.getElementById(idObs).value.trim();
-        return o ? `${q} - ${o}` : q;
+        return `( ${q} ) - ${nome} ( ${o} )`;
       };
 
       // Montagem do Texto
@@ -442,11 +442,11 @@
       txt += `\n*Coordenadas:* ${coordFinal}\n`;
 
       txt += `\n*Equipamentos:*\n`;
-      txt += `- ONT: ( ${getEquip('ont_qtd', 'ont_obs')} )\n`;
-      txt += `- ONU: ( ${getEquip('onu_qtd', 'onu_obs')} )\n`;
-      txt += `- Roteador 2.0: ( ${getEquip('rot20_qtd', 'rot20_obs')} )\n`;
-      txt += `- Roteador 3.0: ( ${getEquip('rot30_qtd', 'rot30_obs')} )\n`;
-      txt += `- Roteador 4.0: ( ${getEquip('rot40_qtd', 'rot40_obs')} )\n`;
+      txt += `${getEquipLinha('ONT', 'ont_qtd', 'ont_obs')}\n`;
+      txt += `${getEquipLinha('ONU', 'onu_qtd', 'onu_obs')}\n`;
+      txt += `${getEquipLinha('Roteador 2.0', 'rot20_qtd', 'rot20_obs')}\n`;
+      txt += `${getEquipLinha('Roteador 3.0', 'rot30_qtd', 'rot30_obs')}\n`;
+      txt += `${getEquipLinha('Roteador 4.0', 'rot40_qtd', 'rot40_obs')}\n`;
 
       txt += `\n*Materiais:*\n`;
       txt += `- Conector Verde: ${document.getElementById('mat_ver').innerText}\n`;
@@ -477,4 +477,5 @@
   </script>
 
 </body>
-</html>
+        </html>
+          
