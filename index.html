@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 650px;
+      max-width: 680px;
       margin: 20px auto;
       padding: 0 15px;
       background-color: #f4f6f9;
@@ -57,7 +57,6 @@
       width: 100%;
       font-weight: bold;
     }
-    /* Estilos dos Contadores */
     .item-contador {
       display: flex;
       flex-direction: column;
@@ -72,6 +71,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
     }
     .contador-botoes { display: flex; align-items: center; gap: 8px; }
     .btn-qtd {
@@ -137,8 +137,24 @@
     </div>
   </div>
 
-  <!-- FORMULÁRIO DE INSTALAÇÃO -->
-  <div id="formInstalacao">
+  <!-- SERVIÇO SOLICITADO (Apenas para Solicitação de Serviços) -->
+  <div class="secao" id="secaoServicoSolicitado" style="display: none;">
+    <div class="campo">
+      <label>Serviço Solicitado:</label>
+      <select id="servicoSolicitado" onchange="tratarRegrasAtendimento()">
+        <option value="Transferência">Transferência</option>
+        <option value="Realocação de equipamento">Realocação de equipamento</option>
+        <option value="Repetidor">Repetidor</option>
+        <option value="Cabo de rede">Cabo de rede</option>
+        <option value="configuração de equipamento">Configuração de equipamento</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- FORMULÁRIO PRINCIPAL -->
+  <div id="formPrincipal">
+    
+    <!-- EQUIPE & CLIENTE -->
     <div class="secao">
       <div class="titulo-secao">Equipe & Cliente</div>
       
@@ -170,7 +186,28 @@
           <input type="checkbox" id="chkManual" onchange="toggleCoordManual()"> Inserir coordenadas manualmente
         </label>
         
-        <input type="text" id="coordManual" placeholder="Digite as coordenadas (ex: -3.888, -38.555)" style="display:none; margin-top: 8px;">
+        <input type="text" id="coordManual" placeholder="Ex: -3.888888, -38.555555" style="display:none; margin-top: 8px;">
+      </div>
+
+      <!-- OBSERVAÇÃO -->
+      <div class="campo" id="boxObsTexto">
+        <label>Observação:</label>
+        <input type="text" id="obsTexto" placeholder="Observações adicionais">
+      </div>
+
+      <div class="campo" id="boxObsLista" style="display: none;">
+        <label>Observação (Motivo):</label>
+        <select id="obsListaSelect">
+          <option value="Troca do conector interno">Troca do conector interno</option>
+          <option value="Troca do conector externo">Troca do conector externo</option>
+          <option value="troca de drop">Troca de drop</option>
+          <option value="troca de equipamento">Troca de equipamento</option>
+          <option value="troca de fonte">Troca de fonte</option>
+          <option value="potência baixa">Potência baixa</option>
+          <option value="teste de velocidade">Teste de velocidade</option>
+          <option value="configuração de equipamento">Configuração de equipamento</option>
+        </select>
+        <input type="text" id="obsListaComplemento" placeholder="Detalhes do problema/serviço" style="margin-top: 8px;">
       </div>
     </div>
 
@@ -178,8 +215,8 @@
     <div class="secao">
       <div class="titulo-secao">Equipamentos</div>
       
-      <!-- ONT -->
-      <div class="item-contador">
+      <!-- ONT (Instalação e Pendência) -->
+      <div class="item-contador eq-ont">
         <div class="linha-contador">
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('ont_qtd', -1)">-</button>
@@ -188,11 +225,11 @@
           </div>
           <span style="font-weight: bold;">- ONT -</span>
         </div>
-        <input type="text" id="ont_obs" placeholder="Texto adicional (ex: Nº de Série)">
+        <input type="text" id="ont_obs" placeholder="Nº de Série / Observação">
       </div>
 
-      <!-- ONU -->
-      <div class="item-contador">
+      <!-- ONU (Instalação e Pendência) -->
+      <div class="item-contador eq-onu">
         <div class="linha-contador">
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('onu_qtd', -1)">-</button>
@@ -201,7 +238,7 @@
           </div>
           <span style="font-weight: bold;">- ONU -</span>
         </div>
-        <input type="text" id="onu_obs" placeholder="Texto adicional (ex: Nº de Série)">
+        <input type="text" id="onu_obs" placeholder="Nº de Série / Observação">
       </div>
 
       <!-- ROTEADOR 2.0 -->
@@ -214,7 +251,7 @@
           </div>
           <span style="font-weight: bold;">- Roteador 2.0 -</span>
         </div>
-        <input type="text" id="rot20_obs" placeholder="Texto adicional (ex: Nº de Série)">
+        <input type="text" id="rot20_obs" placeholder="Nº de Série / Observação">
       </div>
 
       <!-- ROTEADOR 3.0 -->
@@ -227,7 +264,7 @@
           </div>
           <span style="font-weight: bold;">- Roteador 3.0 -</span>
         </div>
-        <input type="text" id="rot30_obs" placeholder="Texto adicional (ex: Nº de Série)">
+        <input type="text" id="rot30_obs" placeholder="Nº de Série / Observação">
       </div>
 
       <!-- ROTEADOR 4.0 -->
@@ -240,13 +277,26 @@
           </div>
           <span style="font-weight: bold;">- Roteador 4.0 -</span>
         </div>
-        <input type="text" id="rot40_obs" placeholder="Texto adicional (ex: Nº de Série)">
+        <input type="text" id="rot40_obs" placeholder="Nº de Série / Observação">
+      </div>
+
+      <!-- EQUIPAMENTO OUTRO (Apenas Solicitação de Serviços) -->
+      <div class="item-contador eq-outro" style="display: none;">
+        <div class="linha-contador">
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('eq_outro_qtd', -1)">-</button>
+            <span id="eq_outro_qtd" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('eq_outro_qtd', 1)">+</button>
+          </div>
+          <input type="text" id="eq_outro_nome" placeholder="Nome do Equipamento Ex: Switch" style="font-weight: bold;">
+        </div>
+        <input type="text" id="eq_outro_obs" placeholder="Nº de Série / Observação">
       </div>
     </div>
 
     <!-- MATERIAIS -->
     <div class="secao">
-      <div class="titulo-secao">Materiais & Drop</div>
+      <div class="titulo-secao">Materiais</div>
       
       <!-- Conector Verde -->
       <div class="item-contador">
@@ -269,6 +319,18 @@
             <button class="btn-qtd" onclick="alterarQtd('mat_azu', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Conector Azul -</span>
+        </div>
+      </div>
+
+      <!-- Conector RJ45 (Apenas Solicitação de Serviços) -->
+      <div class="item-contador mat-rj45" style="display: none;">
+        <div class="linha-contador">
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('mat_rj45', -1)">-</button>
+            <span id="mat_rj45" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('mat_rj45', 1)">+</button>
+          </div>
+          <span style="font-weight: bold;">- Conector Rj45 -</span>
         </div>
       </div>
 
@@ -320,27 +382,53 @@
         </div>
       </div>
 
-      <!-- DROPS -->
-      <div class="campo" style="margin-top: 15px;">
+      <!-- Material Outro -->
+      <div class="item-contador">
+        <div class="linha-contador">
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('mat_outro_qtd', -1)">-</button>
+            <span id="mat_outro_qtd" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('mat_outro_qtd', 1)">+</button>
+          </div>
+          <input type="text" id="mat_outro_nome" placeholder="Outro Material Ex: Fita Isolante" style="font-weight: bold;">
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDIÇÃO DE CABO UTP (Condicional) -->
+    <div class="secao" id="secaoUTP" style="display: none;">
+      <div class="titulo-secao">Metragem Cabo UTP</div>
+      <div class="campo">
+        <label>Cabo UTP inicial:</label>
+        <input type="text" id="utpInicial" placeholder="Ex: 300" oninput="calcularUtp()">
+      </div>
+      <div class="campo">
+        <label>Cabo UTP final:</label>
+        <input type="text" id="utpFinal" placeholder="Ex: 270" oninput="calcularUtp()">
+      </div>
+      <div class="campo">
+        <label>Cabo UTP utilizado:</label>
+        <input type="text" id="utpUtilizado" readonly placeholder="Calculado automaticamente" style="background: #e9ecef;">
+      </div>
+    </div>
+
+    <!-- MEDIÇÃO DE DROP (Condicional) -->
+    <div class="secao" id="secaoDrop">
+      <div class="titulo-secao">Metragem Drop</div>
+      <div class="campo">
         <label>Drop inicial:</label>
         <input type="text" id="dropInicial" placeholder="Ex: 500" oninput="calcularDrop()">
       </div>
-
       <div class="campo">
         <label>Drop Final:</label>
         <input type="text" id="dropFinal" placeholder="Ex: 420" oninput="calcularDrop()">
       </div>
-
       <div class="campo">
         <label>Drop Utilizado:</label>
         <input type="text" id="dropUtilizado" readonly placeholder="Calculado automaticamente" style="background: #e9ecef;">
       </div>
     </div>
-  </div>
 
-  <!-- AVISO OUTROS TIPOS -->
-  <div id="formOutros" class="secao" style="display: none; text-align: center; color: #6c757d;">
-    <p>Os campos para esta opção ainda não foram definidos.</p>
   </div>
 
   <button class="btn-gerar" onclick="gerarRelatorio()">Gerar Relatório</button>
@@ -352,13 +440,67 @@
     let coordsGPS = "";
 
     function alternarFormulario() {
+      tratarRegrasAtendimento();
+    }
+
+    function tratarRegrasAtendimento() {
       const tipo = document.getElementById('tipoCabecalho').value;
-      if (tipo === 'INSTALAÇÃO') {
-        document.getElementById('formInstalacao').style.display = 'block';
-        document.getElementById('formOutros').style.display = 'none';
+      const servico = document.getElementById('servicoSolicitado').value;
+
+      const secServico = document.getElementById('secaoServicoSolicitado');
+      const boxObsTexto = document.getElementById('boxObsTexto');
+      const boxObsLista = document.getElementById('boxObsLista');
+      
+      const eqOnt = document.querySelectorAll('.eq-ont');
+      const eqOnu = document.querySelectorAll('.eq-onu');
+      const eqOutro = document.querySelectorAll('.eq-outro');
+      const matRj45 = document.querySelectorAll('.mat-rj45');
+
+      const secaoUTP = document.getElementById('secaoUTP');
+      const secaoDrop = document.getElementById('secaoDrop');
+
+      // 1. Alterna campo Serviço Solicitado
+      if (tipo === 'SOLICITAÇÃO DE SERVIÇOS') {
+        secServico.style.display = 'block';
       } else {
-        document.getElementById('formInstalacao').style.display = 'none';
-        document.getElementById('formOutros').style.display = 'block';
+        secServico.style.display = 'none';
+      }
+
+      // 2. Alterna Observação
+      if (tipo === 'INSTALAÇÃO') {
+        boxObsTexto.style.display = 'block';
+        boxObsLista.style.display = 'none';
+      } else {
+        boxObsTexto.style.display = 'none';
+        boxObsLista.style.display = 'block';
+      }
+
+      // 3. Alterna Equipamentos e Materiais específicos
+      if (tipo === 'SOLICITAÇÃO DE SERVIÇOS') {
+        eqOnt.forEach(el => el.style.display = 'none');
+        eqOnu.forEach(el => el.style.display = 'none');
+        eqOutro.forEach(el => el.style.display = 'flex');
+        matRj45.forEach(el => el.style.display = 'flex');
+      } else {
+        eqOnt.forEach(el => el.style.display = 'flex');
+        eqOnu.forEach(el => el.style.display = 'flex');
+        eqOutro.forEach(el => el.style.display = 'none');
+        matRj45.forEach(el => el.style.display = 'none');
+      }
+
+      // 4. Regras de Exibição do UTP
+      if (tipo === 'SOLICITAÇÃO DE SERVIÇOS' && (servico === 'Repetidor' || servico === 'Cabo de rede')) {
+        secaoUTP.style.display = 'block';
+      } else {
+        secaoUTP.style.display = 'none';
+      }
+
+      // 5. Regras de Exibição do DROP
+      if (tipo === 'SOLICITAÇÃO DE SERVIÇOS' && 
+         (servico === 'configuração de equipamento' || servico === 'Repetidor' || servico === 'Cabo de rede')) {
+        secaoDrop.style.display = 'none';
+      } else {
+        secaoDrop.style.display = 'block';
       }
     }
 
@@ -397,104 +539,16 @@
       const res = document.getElementById('dropUtilizado');
 
       if (!isNaN(ini) && !isNaN(fin)) {
-        res.value = (ini - fin) + " metros";
+        res.value = Math.abs(ini - fin) + " metros";
       } else {
         res.value = "";
       }
     }
 
-    function obterDataHoje() {
-      const hoje = new Date();
-      const dia = String(hoje.getDate()).padStart(2, '0');
-      const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-      const ano = hoje.getFullYear();
-      return `${dia}/${mes}/${ano}`;
-    }
+    function calcularUtp() {
+      const ini = parseFloat(document.getElementById('utpInicial').value);
+      const fin = parseFloat(document.getElementById('utpFinal').value);
+      const res = document.getElementById('utpUtilizado');
 
-    function gerarRelatorio() {
-      const tipo = document.getElementById('tipoCabecalho').value;
-
-      if (tipo !== 'INSTALAÇÃO') {
-        alert('Selecione "Instalação" para gerar este modelo.');
-        return;
-      }
-
-      const tecnico = document.getElementById('tecnico').value.trim();
-      const auxiliar = document.getElementById('auxiliar').value.trim();
-      const cliente = document.getElementById('cliente').value.trim();
-      const endereco = document.getElementById('endereco').value.trim();
-      
-      // Coordenadas e geração do link do Google Maps
-      const usaManual = document.getElementById('chkManual').checked;
-      const coordRaw = usaManual 
-        ? document.getElementById('coordManual').value.trim().replace(/\s+/g, '') 
-        : coordsGPS;
-
-      let coordFinal = "";
-      if (coordRaw !== "") {
-        coordFinal = `https://www.google.com/maps?q=${coordRaw}`;
-      }
-
-      // Monta a linha do equipamento no padrão: ( 00 ) - NOME ( OBS )
-      const getEquipLinha = (nome, idQtd, idObs) => {
-        const q = document.getElementById(idQtd).innerText;
-        const o = document.getElementById(idObs).value.trim();
-        return `( ${q} ) - ${nome} ( ${o} )`;
-      };
-
-      // Monta a linha do material no padrão: ( 00 ) - NOME
-      const getMaterialLinha = (nome, idQtd) => {
-        const q = document.getElementById(idQtd).innerText;
-        return `( ${q} ) - ${nome}`;
-      };
-
-      // Montagem do Texto
-      let txt = `*${tipo}*\n\n`;
-      txt += `*Equipe:*\n`;
-      txt += `- Técnico: ${tecnico}\n`;
-      if (auxiliar !== "") {
-        txt += `- Auxiliar: ${auxiliar}\n`;
-      }
-
-      txt += `\n*Cliente:* ${cliente}\n`;
-      txt += `\n*Endereço:* ${endereco}\n`;
-      txt += `\n*COORDENADAS:* ${coordFinal}\n`;
-
-      txt += `\n*Equipamentos:*\n`;
-      txt += `${getEquipLinha('ONT', 'ont_qtd', 'ont_obs')}\n`;
-      txt += `${getEquipLinha('ONU', 'onu_qtd', 'onu_obs')}\n`;
-      txt += `${getEquipLinha('Roteador 2.0', 'rot20_qtd', 'rot20_obs')}\n`;
-      txt += `${getEquipLinha('Roteador 3.0', 'rot30_qtd', 'rot30_obs')}\n`;
-      txt += `${getEquipLinha('Roteador 4.0', 'rot40_qtd', 'rot40_obs')}\n`;
-
-      txt += `\n*Materiais:*\n`;
-      txt += `${getMaterialLinha('Conector Verde', 'mat_ver')}\n`;
-      txt += `${getMaterialLinha('Conector Azul', 'mat_azu')}\n`;
-      txt += `${getMaterialLinha('Adesivo', 'mat_ade')}\n`;
-      txt += `${getMaterialLinha('Fixa Fio', 'mat_fix')}\n`;
-      txt += `${getMaterialLinha('Esticador', 'mat_est')}\n`;
-      txt += `${getMaterialLinha('Pet Cord', 'mat_pet')}\n`;
-
-      txt += `\nDrop inicial: ${document.getElementById('dropInicial').value}\n`;
-      txt += `Drop Final: ${document.getElementById('dropFinal').value}\n`;
-      txt += `Drop Utilizado: ${document.getElementById('dropUtilizado').value}\n`;
-
-      txt += `\nData: ${obterDataHoje()}`;
-
-      const resDiv = document.getElementById('resultado');
-      resDiv.innerText = txt;
-      resDiv.style.display = 'block';
-      document.getElementById('btnCopiar').style.display = 'block';
-    }
-
-    function copiarTexto() {
-      const texto = document.getElementById('resultado').innerText;
-      navigator.clipboard.writeText(texto).then(() => {
-        alert("Relatório copiado com sucesso!");
-      });
-    }
-  </script>
-
-</body>
-          </html>
-            
+      if (!isNaN(ini) && !isNaN(fin)) {
+        res.value = Math.a
