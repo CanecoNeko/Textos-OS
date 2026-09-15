@@ -189,6 +189,28 @@
         <input type="text" id="coordManual" placeholder="Ex: -3.888888, -38.555555" style="display:none; margin-top: 8px;">
       </div>
 
+      <!-- CAIXA, PORTA E POTÊNCIA (Condicional) -->
+      <div id="secaoCaixaPortaPotencia">
+        <div class="campo">
+          <label>Caixa:</label>
+          <input type="text" id="caixa" placeholder="Ex: CTO-01">
+        </div>
+
+        <div class="campo">
+          <label>Porta (0 a 16):</label>
+          <div class="contador-botoes" style="justify-content: flex-start;">
+            <button type="button" class="btn-qtd" onclick="alterarQtdPorta(-1)">-</button>
+            <span id="porta_qtd" class="qtd-valor">00</span>
+            <button type="button" class="btn-qtd" onclick="alterarQtdPorta(1)">+</button>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>Potência final:</label>
+          <input type="text" id="potenciaFinal" placeholder="Ex: 19.5 (o sinal '-' será adicionado automaticamente)">
+        </div>
+      </div>
+
       <!-- OBSERVAÇÃO -->
       <div class="campo" id="boxObsTexto">
         <label>Observação:</label>
@@ -219,9 +241,9 @@
       <div class="item-contador eq-ont">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('ont_qtd', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('ont_qtd', -1)">-</button>
             <span id="ont_qtd" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('ont_qtd', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('ont_qtd', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- ONT -</span>
         </div>
@@ -232,9 +254,9 @@
       <div class="item-contador eq-onu">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('onu_qtd', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('onu_qtd', -1)">-</button>
             <span id="onu_qtd" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('onu_qtd', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('onu_qtd', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- ONU -</span>
         </div>
@@ -245,9 +267,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('rot20_qtd', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('rot20_qtd', -1)">-</button>
             <span id="rot20_qtd" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('rot20_qtd', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('rot20_qtd', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Roteador 2.0 -</span>
         </div>
@@ -258,9 +280,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('rot30_qtd', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('rot30_qtd', -1)">-</button>
             <span id="rot30_qtd" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('rot30_qtd', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('rot30_qtd', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Roteador 3.0 -</span>
         </div>
@@ -271,9 +293,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('rot40_qtd', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('rot40_qtd', -1)">-</button>
             <span id="rot40_qtd" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('rot40_qtd', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('rot40_qtd', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Roteador 4.0 -</span>
         </div>
@@ -284,9 +306,9 @@
       <div class="item-contador eq-outro" style="display: none;">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('eq_outro_qtd', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('eq_outro_qtd', -1)">-</button>
             <span id="eq_outro_qtd" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('eq_outro_qtd', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('eq_outro_qtd', 1)">+</button>
           </div>
           <input type="text" id="eq_outro_nome" placeholder="Nome do Equipamento Ex: Switch" style="font-weight: bold;">
         </div>
@@ -302,9 +324,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('mat_ver', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_ver', -1)">-</button>
             <span id="mat_ver" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('mat_ver', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_ver', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Conector Verde -</span>
         </div>
@@ -314,9 +336,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('mat_azu', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_azu', -1)">-</button>
             <span id="mat_azu" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('mat_azu', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_azu', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Conector Azul -</span>
         </div>
@@ -326,9 +348,9 @@
       <div class="item-contador mat-rj45" style="display: none;">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('mat_rj45', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_rj45', -1)">-</button>
             <span id="mat_rj45" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('mat_rj45', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_rj45', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Conector Rj45 -</span>
         </div>
@@ -338,9 +360,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('mat_ade', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_ade', -1)">-</button>
             <span id="mat_ade" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('mat_ade', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_ade', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Adesivo -</span>
         </div>
@@ -350,9 +372,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('mat_fix', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_fix', -1)">-</button>
             <span id="mat_fix" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('mat_fix', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_fix', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Fixa Fio -</span>
         </div>
@@ -362,9 +384,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('mat_est', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_est', -1)">-</button>
             <span id="mat_est" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('mat_est', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_est', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Esticador -</span>
         </div>
@@ -374,9 +396,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('mat_pet', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_pet', -1)">-</button>
             <span id="mat_pet" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('mat_pet', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_pet', 1)">+</button>
           </div>
           <span style="font-weight: bold;">- Pet Cord -</span>
         </div>
@@ -386,9 +408,9 @@
       <div class="item-contador">
         <div class="linha-contador">
           <div class="contador-botoes">
-            <button class="btn-qtd" onclick="alterarQtd('mat_outro_qtd', -1)">-</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_outro_qtd', -1)">-</button>
             <span id="mat_outro_qtd" class="qtd-valor">00</span>
-            <button class="btn-qtd" onclick="alterarQtd('mat_outro_qtd', 1)">+</button>
+            <button type="button" class="btn-qtd" onclick="alterarQtd('mat_outro_qtd', 1)">+</button>
           </div>
           <input type="text" id="mat_outro_nome" placeholder="Outro Material Ex: Fita Isolante" style="font-weight: bold;">
         </div>
@@ -450,6 +472,7 @@
       const secServico = document.getElementById('secaoServicoSolicitado');
       const boxObsTexto = document.getElementById('boxObsTexto');
       const boxObsLista = document.getElementById('boxObsLista');
+      const secCaixaPortaPotencia = document.getElementById('secaoCaixaPortaPotencia');
       
       const eqOnt = document.querySelectorAll('.eq-ont');
       const eqOnu = document.querySelectorAll('.eq-onu');
@@ -466,7 +489,15 @@
         secServico.style.display = 'none';
       }
 
-      // 2. Alterna Observação
+      // 2. Regra para Caixa, Porta e Potência
+      if (tipo === 'INSTALAÇÃO' || tipo === 'PENDÊNCIA' || 
+         (tipo === 'SOLICITAÇÃO DE SERVIÇOS' && (servico === 'Transferência' || servico === 'Realocação de equipamento'))) {
+        secCaixaPortaPotencia.style.display = 'block';
+      } else {
+        secCaixaPortaPotencia.style.display = 'none';
+      }
+
+      // 3. Alterna Observação
       if (tipo === 'INSTALAÇÃO') {
         boxObsTexto.style.display = 'block';
         boxObsLista.style.display = 'none';
@@ -475,7 +506,7 @@
         boxObsLista.style.display = 'block';
       }
 
-      // 3. Alterna Equipamentos e Materiais específicos
+      // 4. Alterna Equipamentos e Materiais específicos
       if (tipo === 'SOLICITAÇÃO DE SERVIÇOS') {
         eqOnt.forEach(el => el.style.display = 'none');
         eqOnu.forEach(el => el.style.display = 'none');
@@ -488,14 +519,14 @@
         matRj45.forEach(el => el.style.display = 'none');
       }
 
-      // 4. Regras de Exibição do UTP
+      // 5. Regras de Exibição do UTP
       if (tipo === 'SOLICITAÇÃO DE SERVIÇOS' && (servico === 'Repetidor' || servico === 'Cabo de rede')) {
         secaoUTP.style.display = 'block';
       } else {
         secaoUTP.style.display = 'none';
       }
 
-      // 5. Regras de Exibição do DROP
+      // 6. Regras de Exibição do DROP
       if (tipo === 'SOLICITAÇÃO DE SERVIÇOS' && 
          (servico === 'configuração de equipamento' || servico === 'Repetidor' || servico === 'Cabo de rede')) {
         secaoDrop.style.display = 'none';
@@ -509,6 +540,23 @@
       let num = parseInt(el.innerText, 10) + valor;
       if (num < 0) num = 0;
       el.innerText = num.toString().padStart(2, '0');
+    }
+
+    function alterarQtdPorta(valor) {
+      const el = document.getElementById('porta_qtd');
+      let num = parseInt(el.innerText, 10) + valor;
+      if (num < 0) num = 0;
+      if (num > 16) num = 16;
+      el.innerText = num.toString().padStart(2, '0');
+    }
+
+    function formatarPotencia(valor) {
+      valor = valor.trim();
+      if (!valor) return "";
+      if (valor.startsWith("-")) {
+        return valor;
+      }
+      return "-" + valor;
     }
 
     function obterCoordenadas() {
@@ -551,4 +599,155 @@
       const res = document.getElementById('utpUtilizado');
 
       if (!isNaN(ini) && !isNaN(fin)) {
-        res.value = Math.a
+        res.value = Math.abs(ini - fin) + " metros";
+      } else {
+        res.value = "";
+      }
+    }
+
+    function obterDataHoje() {
+      const hoje = new Date();
+      const dia = String(hoje.getDate()).padStart(2, '0');
+      const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+      const ano = hoje.getFullYear();
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function gerarRelatorio() {
+      const tipo = document.getElementById('tipoCabecalho').value;
+      const servico = document.getElementById('servicoSolicitado').value;
+
+      const tecnico = document.getElementById('tecnico').value.trim();
+      const auxiliar = document.getElementById('auxiliar').value.trim();
+      const cliente = document.getElementById('cliente').value.trim();
+      const endereco = document.getElementById('endereco').value.trim();
+      
+      // Coordenadas com Link do Google Maps
+      const usaManual = document.getElementById('chkManual').checked;
+      const coordRaw = usaManual 
+        ? document.getElementById('coordManual').value.trim().replace(/\s+/g, '') 
+        : coordsGPS;
+
+      let coordFinal = "";
+      if (coordRaw !== "") {
+        coordFinal = `https://www.google.com/maps?q=${coordRaw}`;
+      }
+
+      // Formatador de Equipamento: ( 00 ) - NOME ( OBS )
+      const getEquipLinha = (nome, idQtd, idObs) => {
+        const q = document.getElementById(idQtd).innerText;
+        const o = document.getElementById(idObs).value.trim();
+        return `( ${q} ) - ${nome}${o ? ' ( ' + o + ' )' : ' (  )'}`;
+      };
+
+      // Formatador de Material: ( 00 ) - NOME
+      const getMaterialLinha = (nome, idQtd) => {
+        const q = document.getElementById(idQtd).innerText;
+        return `( ${q} ) - ${nome}`;
+      };
+
+      // Montagem do Texto
+      let txt = `*${tipo}*\n\n`;
+
+      if (tipo === 'SOLICITAÇÃO DE SERVIÇOS') {
+        txt += `*Serviço solicitado:* ${servico}\n\n`;
+      }
+
+      txt += `*Equipe:*\n`;
+      txt += `- Técnico: ${tecnico}\n`;
+      if (auxiliar !== "") {
+        txt += `- Auxiliar: ${auxiliar}\n`;
+      }
+      txt += `\n`;
+
+      txt += `*Cliente:* ${cliente}\n\n`;
+      txt += `*Endereço:* ${endereco}\n\n`;
+      txt += `*Coordenadas:* ${coordFinal}\n\n`;
+
+      // Caixa, Porta e Potência final
+      if (tipo === 'INSTALAÇÃO' || tipo === 'PENDÊNCIA' || 
+         (tipo === 'SOLICITAÇÃO DE SERVIÇOS' && (servico === 'Transferência' || servico === 'Realocação de equipamento'))) {
+        const caixaVal = document.getElementById('caixa').value.trim();
+        const portaVal = document.getElementById('porta_qtd').innerText;
+        const potenciaVal = formatarPotencia(document.getElementById('potenciaFinal').value);
+
+        txt += `*Caixa:* ${caixaVal}\n`;
+        txt += `*Porta:* ${portaVal}\n`;
+        txt += `*Potência final:* ${potenciaVal}\n\n`;
+      }
+
+      // Observação
+      if (tipo === 'INSTALAÇÃO') {
+        txt += `*Observação:* ${document.getElementById('obsTexto').value.trim()}\n\n`;
+      } else {
+        const selObs = document.getElementById('obsListaSelect').value;
+        const compObs = document.getElementById('obsListaComplemento').value.trim();
+        txt += `*Observação:* ${selObs}${compObs ? ' : ' + compObs : ''}\n\n`;
+      }
+
+      // Equipamentos
+      txt += `*Equipamentos:*\n\n`;
+      if (tipo !== 'SOLICITAÇÃO DE SERVIÇOS') {
+        txt += `${getEquipLinha('ONT', 'ont_qtd', 'ont_obs')}\n`;
+        txt += `${getEquipLinha('ONU', 'onu_qtd', 'onu_obs')}\n`;
+      }
+      txt += `${getEquipLinha('Roteador 2.0', 'rot20_qtd', 'rot20_obs')}\n`;
+      txt += `${getEquipLinha('Roteador 3.0', 'rot30_qtd', 'rot30_obs')}\n`;
+      txt += `${getEquipLinha('Roteador 4.0', 'rot40_qtd', 'rot40_obs')}\n`;
+      if (tipo === 'SOLICITAÇÃO DE SERVIÇOS') {
+        const nomeEqOutro = document.getElementById('eq_outro_nome').value.trim() || 'Outro';
+        txt += `${getEquipLinha(nomeEqOutro, 'eq_outro_qtd', 'eq_outro_obs')}\n`;
+      }
+      txt += `\n`;
+
+      // Materiais
+      txt += `*Materiais:*\n\n`;
+      txt += `${getMaterialLinha('Conector Verde', 'mat_ver')}\n`;
+      txt += `${getMaterialLinha('Conector Azul', 'mat_azu')}\n`;
+      if (tipo === 'SOLICITAÇÃO DE SERVIÇOS') {
+        txt += `${getMaterialLinha('Conector Rj45', 'mat_rj45')}\n`;
+      }
+      txt += `${getMaterialLinha('Adesivo', 'mat_ade')}\n`;
+      txt += `${getMaterialLinha('Fixa Fio', 'mat_fix')}\n`;
+      txt += `${getMaterialLinha('Esticador', 'mat_est')}\n`;
+      txt += `${getMaterialLinha('Pet Cord', 'mat_pet')}\n`;
+      
+      const nomeMatOutro = document.getElementById('mat_outro_nome').value.trim() || 'Outro';
+      txt += `${getMaterialLinha(nomeMatOutro, 'mat_outro_qtd')}\n\n`;
+
+      // Cabo UTP
+      if (tipo === 'SOLICITAÇÃO DE SERVIÇOS' && (servico === 'Repetidor' || servico === 'Cabo de rede')) {
+        txt += `Cabo UTP inicial: ${document.getElementById('utpInicial').value}\n`;
+        txt += `Cabo UTP final: ${document.getElementById('utpFinal').value}\n`;
+        txt += `Cabo UTP utilizado: ${document.getElementById('utpUtilizado').value}\n\n`;
+      }
+
+      // Drop
+      if (!(tipo === 'SOLICITAÇÃO DE SERVIÇOS' && (servico === 'configuração de equipamento' || servico === 'Repetidor' || servico === 'Cabo de rede'))) {
+        txt += `Drop inicial: ${document.getElementById('dropInicial').value}\n`;
+        txt += `Drop Final: ${document.getElementById('dropFinal').value}\n`;
+        txt += `Drop Utilizado: ${document.getElementById('dropUtilizado').value}\n\n`;
+      }
+
+      txt += `Data: ${obterDataHoje()}`;
+
+      const resDiv = document.getElementById('resultado');
+      resDiv.innerText = txt;
+      resDiv.style.display = 'block';
+      document.getElementById('btnCopiar').style.display = 'block';
+    }
+
+    function copiarTexto() {
+      const texto = document.getElementById('resultado').innerText;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Relatório copiado com sucesso!");
+      });
+    }
+
+    window.onload = function() {
+      tratarRegrasAtendimento();
+    };
+  </script>
+
+</body>
+</html>
