@@ -170,7 +170,7 @@
           <input type="checkbox" id="chkManual" onchange="toggleCoordManual()"> Inserir coordenadas manualmente
         </label>
         
-        <input type="text" id="coordManual" placeholder="Digite as coordenadas manualmente" style="display:none; margin-top: 8px;">
+        <input type="text" id="coordManual" placeholder="Digite as coordenadas (ex: -3.888, -38.555)" style="display:none; margin-top: 8px;">
       </div>
     </div>
 
@@ -373,7 +373,9 @@
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-            coordsGPS = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+            const lat = pos.coords.latitude.toFixed(6);
+            const lng = pos.coords.longitude.toFixed(6);
+            coordsGPS = `${lat},${lng}`;
             alert("Coordenadas obtidas com sucesso!");
           },
           (err) => alert("Erro ao obter coordenadas: " + err.message)
@@ -422,11 +424,16 @@
       const cliente = document.getElementById('cliente').value.trim();
       const endereco = document.getElementById('endereco').value.trim();
       
-      // Coordenadas
+      // Coordenadas e geração do link do Google Maps
       const usaManual = document.getElementById('chkManual').checked;
-      const coordFinal = usaManual 
-        ? document.getElementById('coordManual').value.trim() 
+      const coordRaw = usaManual 
+        ? document.getElementById('coordManual').value.trim().replace(/\s+/g, '') 
         : coordsGPS;
+
+      let coordFinal = "";
+      if (coordRaw !== "") {
+        coordFinal = `https://www.google.com/maps?q=${coordRaw}`;
+      }
 
       // Monta a linha do equipamento no padrão: ( 00 ) - NOME ( OBS )
       const getEquipLinha = (nome, idQtd, idObs) => {
@@ -451,7 +458,7 @@
 
       txt += `\n*Cliente:* ${cliente}\n`;
       txt += `\n*Endereço:* ${endereco}\n`;
-      txt += `\n*Coordenadas:* ${coordFinal}\n`;
+      txt += `\n*COORDENADAS:* ${coordFinal}\n`;
 
       txt += `\n*Equipamentos:*\n`;
       txt += `${getEquipLinha('ONT', 'ont_qtd', 'ont_obs')}\n`;
@@ -489,5 +496,5 @@
   </script>
 
 </body>
-            </html>
+          </html>
             
