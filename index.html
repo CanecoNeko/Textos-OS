@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitação de Serviços</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 15px;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    h2 { text-align: center; color: #2c3e50; }
+    .campo { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; }
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    .btn-geo {
+      background-color: #17a2b8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 5px;
+      font-weight: bold;
+    }
+    .contador-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 8px;
+    }
+    .contador-botoes { display: flex; align-items: center; gap: 10px; }
+    .btn-qtd {
+      width: 32px;
+      height: 32px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      background-color: #e9ecef;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-qtd:active { background-color: #ced4da; }
+    .qtd-valor { font-weight: bold; font-size: 16px; min-width: 25px; text-align: center; }
+    .btn-gerar {
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #resultado {
+      white-space: pre-wrap;
+      background: #ffffff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-family: monospace;
+    }
+    .btn-copiar {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Solicitação de Serviços</h2>
+
+  <div class="campo">
+    <label>Técnico:</label>
+    <input type="text" id="tecnico" placeholder="Nome do técnico">
+  </div>
+
+  <div class="campo">
+    <label>Auxiliar (Opcional):</label>
+    <input type="text" id="auxiliar" placeholder="Deixe em branco se não houver">
+  </div>
+
+  <div class="campo">
+    <label>Cliente:</label>
+    <input type="text" id="cliente" placeholder="Nome do cliente">
+  </div>
+
+  <div class="campo">
+    <label>Endereço:</label>
+    <input type="text" id="endereco" placeholder="Endereço completo">
+  </div>
+
+  <div class="campo">
+    <label>Coordenadas:</label>
+    <input type="text" id="coordenadas" placeholder="Latitude, Longitude">
+    <button type="button" class="btn-geo" onclick="obterCoordenadas()">📍 Pegar Localização Atual</button>
+  </div>
+
+  <div class="campo">
+    <label>Observação (OBS):</label>
+    <select id="obs">
+      <option value="">-- Selecione uma opção --</option>
+      <option value="Troca do conector interno">Troca do conector interno</option>
+      <option value="Troca do conector da CTO">Troca do conector da CTO</option>
+      <option value="Troca de drop">Troca de drop</option>
+    </select>
+  </div>
+
+  <label>Equipamentos:</label>
+
+  <div class="contador-container">
+    <span>Roteador 2.0</span>
+    <div class="contador-botoes">
+      <button class="btn-qtd" onclick="alterarQtd('rot20', -1)">-</button>
+      <span id="rot20" class="qtd-valor">00</span>
+      <button class="btn-qtd" onclick="alterarQtd('rot20', 1)">+</button>
+    </div>
+  </div>
+
+  <div class="contador-container">
+    <span>Roteador 3.0</span>
+    <div class="contador-botoes">
+      <button class="btn-qtd" onclick="alterarQtd('rot30', -1)">-</button>
+      <span id="rot30" class="qtd-valor">00</span>
+      <button class="btn-qtd" onclick="alterarQtd('rot30', 1)">+</button>
+    </div>
+  </div>
+
+  <div class="contador-container">
+    <span>Roteador 4.0</span>
+    <div class="contador-botoes">
+      <button class="btn-qtd" onclick="alterarQtd('rot40', -1)">-</button>
+      <span id="rot40" class="qtd-valor">00</span>
+      <button class="btn-qtd" onclick="alterarQtd('rot40', 1)">+</button>
+    </div>
+  </div>
+
+  <button class="btn-gerar" onclick="gerarTexto()">Gerar Relatório</button>
+
+  <div id="resultado" style="display:none;"></div>
+  <button id="btnCopiar" class="btn-copiar" onclick="copiarTexto()">📋 Copiar Relatório</button>
+
+  <script>
+    // Função para alterar contadores com dois dígitos (00, 01, 02...)
+    function alterarQtd(id, valor) {
+      const elemento = document.getElementById(id);
+      let atual = parseInt(elemento.innerText, 10);
+      atual += valor;
+      if (atual < 0) atual = 0;
+      elemento.innerText = atual.toString().padStart(2, '0');
+    }
+
+    // Função de Geolocalização
+    function obterCoordenadas() {
+      const inputCoords = document.getElementById('coordenadas');
+      if ("geolocation" in navigator) {
+        inputCoords.value = "Obtendo localização...";
+        navigator.geolocation.getCurrentPosition(
+          (posicao) => {
+            const lat = posicao.coords.latitude.toFixed(6);
+            const lng = posicao.coords.longitude.toFixed(6);
+            inputCoords.value = `${lat}, ${lng}`;
+          },
+          (erro) => {
+            alert("Erro ao obter localização: " + erro.message);
+            inputCoords.value = "";
+          }
+        );
+      } else {
+        alert("Geolocalização não é suportada pelo seu navegador.");
+      }
+    }
+
+    // Função principal para gerar a mensagem formatada
+    function gerarTexto() {
+      const tecnico = document.getElementById('tecnico').value.trim();
+      const auxiliar = document.getElementById('auxiliar').value.trim();
+      const cliente = document.getElementById('cliente').value.trim();
+      const endereco = document.getElementById('endereco').value.trim();
+      const coordenadas = document.getElementById('coordenadas').value.trim();
+      const obs = document.getElementById('obs').value;
+
+      const rot20 = document.getElementById('rot20').innerText;
+      const rot30 = document.getElementById('rot30').innerText;
+      const rot40 = document.getElementById('rot40').innerText;
+
+      let relatorio = `*SOLICITAÇÃO DE SERVIÇOS*\n`;
+      relatorio += `*Equipe:*\n`;
+      relatorio += `- Técnico: ${tecnico}\n`;
+      
+      // Caso o Auxiliar fique em branco, a linha é omitida
+      if (auxiliar !== "") {
+        relatorio += `- Auxiliar: ${auxiliar}\n`;
+      }
+
+      relatorio += `\n*CLIENTE:* ${cliente}\n`;
+      relatorio += `\n*Endereço:* ${endereco}\n`;
+      relatorio += `\n*COORDENADAS:* ${coordenadas}\n`;
+      relatorio += `\n*OBS:* ${obs}\n`;
+      relatorio += `\n*Equipamentos:*\n`;
+      relatorio += `- Roteador 2.0 ( ${rot20} )\n`;
+      relatorio += `- Roteador 3.0 ( ${rot30} )\n`;
+      relatorio += `- Roteador 4.0 ( ${rot40} )`;
+
+      const divResultado = document.getElementById('resultado');
+      divResultado.innerText = relatorio;
+      divResultado.style.display = 'block';
+      document.getElementById('btnCopiar').style.display = 'block';
+    }
+
+    // Função para copiar para a área de transferência
+    function copiarTexto() {
+      const texto = document.getElementById('resultado').innerText;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Relatório copiado com sucesso!");
+      });
+    }
+  </script>
+
+</body>
+</html>
