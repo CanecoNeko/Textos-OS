@@ -3,19 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solicitação de Serviços</title>
+  <title>Gerador de Relatórios</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 600px;
+      max-width: 650px;
       margin: 20px auto;
       padding: 0 15px;
-      background-color: #f8f9fa;
+      background-color: #f4f6f9;
       color: #333;
     }
-    h2 { text-align: center; color: #2c3e50; }
+    h2 { text-align: center; color: #1a252f; margin-bottom: 20px; }
+    .secao {
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .titulo-secao {
+      font-size: 16px;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 5px;
+    }
     .campo { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; margin-bottom: 5px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
     input[type="text"], select {
       width: 100%;
       padding: 10px;
@@ -24,43 +39,57 @@
       box-sizing: border-box;
       font-size: 14px;
     }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-weight: normal;
+      cursor: pointer;
+    }
     .btn-geo {
       background-color: #17a2b8;
       color: white;
       border: none;
-      padding: 10px 15px;
+      padding: 10px;
       border-radius: 5px;
       cursor: pointer;
       width: 100%;
-      margin-top: 5px;
       font-weight: bold;
     }
-    .contador-container {
+    /* Estilos dos Contadores */
+    .item-contador {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: white;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
+      flex-direction: column;
+      gap: 5px;
+      background: #f8f9fa;
+      padding: 10px;
+      border: 1px solid #e9ecef;
       border-radius: 5px;
       margin-bottom: 8px;
     }
-    .contador-botoes { display: flex; align-items: center; gap: 10px; }
+    .linha-contador {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .contador-botoes { display: flex; align-items: center; gap: 8px; }
     .btn-qtd {
       width: 32px;
       height: 32px;
       font-size: 18px;
       font-weight: bold;
       border: none;
-      background-color: #e9ecef;
+      background-color: #e2e6ea;
       border-radius: 5px;
       cursor: pointer;
     }
-    .btn-qtd:active { background-color: #ced4da; }
+    .btn-qtd:active { background-color: #dae0e5; }
     .qtd-valor { font-weight: bold; font-size: 16px; min-width: 25px; text-align: center; }
+    
     .btn-gerar {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       background-color: #28a745;
       color: white;
       border: none;
@@ -68,7 +97,6 @@
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 15px;
     }
     #resultado {
       white-space: pre-wrap;
@@ -81,7 +109,7 @@
     }
     .btn-copiar {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       background-color: #007bff;
       color: white;
       border: none;
@@ -95,147 +123,351 @@
 </head>
 <body>
 
-  <h2>Solicitação de Serviços</h2>
+  <h2>Sistema de Relatórios</h2>
 
-  <div class="campo">
-    <label>Técnico:</label>
-    <input type="text" id="tecnico" placeholder="Nome do técnico">
-  </div>
-
-  <div class="campo">
-    <label>Auxiliar (Opcional):</label>
-    <input type="text" id="auxiliar" placeholder="Deixe em branco se não houver">
-  </div>
-
-  <div class="campo">
-    <label>Cliente:</label>
-    <input type="text" id="cliente" placeholder="Nome do cliente">
-  </div>
-
-  <div class="campo">
-    <label>Endereço:</label>
-    <input type="text" id="endereco" placeholder="Endereço completo">
-  </div>
-
-  <div class="campo">
-    <label>Coordenadas:</label>
-    <input type="text" id="coordenadas" placeholder="Latitude, Longitude">
-    <button type="button" class="btn-geo" onclick="obterCoordenadas()">📍 Pegar Localização Atual</button>
-  </div>
-
-  <div class="campo">
-    <label>Observação (OBS):</label>
-    <select id="obs">
-      <option value="">-- Selecione uma opção --</option>
-      <option value="Troca do conector interno">Troca do conector interno</option>
-      <option value="Troca do conector da CTO">Troca do conector da CTO</option>
-      <option value="Troca de drop">Troca de drop</option>
-    </select>
-  </div>
-
-  <label>Equipamentos:</label>
-
-  <div class="contador-container">
-    <span>Roteador 2.0</span>
-    <div class="contador-botoes">
-      <button class="btn-qtd" onclick="alterarQtd('rot20', -1)">-</button>
-      <span id="rot20" class="qtd-valor">00</span>
-      <button class="btn-qtd" onclick="alterarQtd('rot20', 1)">+</button>
+  <!-- CABEÇALHO -->
+  <div class="secao">
+    <div class="campo">
+      <label>Tipo de Atendimento:</label>
+      <select id="tipoCabecalho" onchange="alternarFormulario()">
+        <option value="INSTALAÇÃO">Instalação</option>
+        <option value="PENDÊNCIA">Pendência</option>
+        <option value="SOLICITAÇÃO DE SERVIÇOS">Solicitação de Serviços</option>
+      </select>
     </div>
   </div>
 
-  <div class="contador-container">
-    <span>Roteador 3.0</span>
-    <div class="contador-botoes">
-      <button class="btn-qtd" onclick="alterarQtd('rot30', -1)">-</button>
-      <span id="rot30" class="qtd-valor">00</span>
-      <button class="btn-qtd" onclick="alterarQtd('rot30', 1)">+</button>
+  <!-- FORMULÁRIO DE INSTALAÇÃO -->
+  <div id="formInstalacao">
+    <div class="secao">
+      <div class="titulo-secao">Equipe & Cliente</div>
+      
+      <div class="campo">
+        <label>Técnico:</label>
+        <input type="text" id="tecnico" placeholder="Nome do Técnico">
+      </div>
+
+      <div class="campo">
+        <label>Auxiliar (Opcional):</label>
+        <input type="text" id="auxiliar" placeholder="Deixe em branco se não houver">
+      </div>
+
+      <div class="campo">
+        <label>Cliente:</label>
+        <input type="text" id="cliente" placeholder="Nome do Cliente">
+      </div>
+
+      <div class="campo">
+        <label>Endereço:</label>
+        <input type="text" id="endereco" placeholder="Endereço completo">
+      </div>
+
+      <div class="campo">
+        <label>Coordenadas:</label>
+        <button type="button" class="btn-geo" onclick="obterCoordenadas()">📍 Puxar Coordenadas Atuais</button>
+        
+        <label class="checkbox-container">
+          <input type="checkbox" id="chkManual" onchange="toggleCoordManual()"> Inserir coordenadas manualmente
+        </label>
+        
+        <input type="text" id="coordManual" placeholder="Digite as coordenadas manualmente" style="display:none; margin-top: 8px;">
+      </div>
+    </div>
+
+    <!-- EQUIPAMENTOS -->
+    <div class="secao">
+      <div class="titulo-secao">Equipamentos</div>
+      
+      <!-- ONT -->
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>ONT</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('ont_qtd', -1)">-</button>
+            <span id="ont_qtd" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('ont_qtd', 1)">+</button>
+          </div>
+        </div>
+        <input type="text" id="ont_obs" placeholder="Informação adicional / Nº Série">
+      </div>
+
+      <!-- ONU -->
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>ONU</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('onu_qtd', -1)">-</button>
+            <span id="onu_qtd" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('onu_qtd', 1)">+</button>
+          </div>
+        </div>
+        <input type="text" id="onu_obs" placeholder="Informação adicional / Nº Série">
+      </div>
+
+      <!-- ROTEADOR 2.0 -->
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Roteador 2.0</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('rot20_qtd', -1)">-</button>
+            <span id="rot20_qtd" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('rot20_qtd', 1)">+</button>
+          </div>
+        </div>
+        <input type="text" id="rot20_obs" placeholder="Informação adicional / Nº Série">
+      </div>
+
+      <!-- ROTEADOR 3.0 -->
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Roteador 3.0</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('rot30_qtd', -1)">-</button>
+            <span id="rot30_qtd" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('rot30_qtd', 1)">+</button>
+          </div>
+        </div>
+        <input type="text" id="rot30_obs" placeholder="Informação adicional / Nº Série">
+      </div>
+
+      <!-- ROTEADOR 4.0 -->
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Roteador 4.0</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('rot40_qtd', -1)">-</button>
+            <span id="rot40_qtd" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('rot40_qtd', 1)">+</button>
+          </div>
+        </div>
+        <input type="text" id="rot40_obs" placeholder="Informação adicional / Nº Série">
+      </div>
+    </div>
+
+    <!-- MATERIAIS -->
+    <div class="secao">
+      <div class="titulo-secao">Materiais & Drop</div>
+      
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Conector Verde</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('mat_ver', -1)">-</button>
+            <span id="mat_ver" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('mat_ver', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Conector Azul</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('mat_azu', -1)">-</button>
+            <span id="mat_azu" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('mat_azu', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Adesivo</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('mat_ade', -1)">-</button>
+            <span id="mat_ade" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('mat_ade', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Fixa Fio</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('mat_fix', -1)">-</button>
+            <span id="mat_fix" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('mat_fix', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Esticador</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('mat_est', -1)">-</button>
+            <span id="mat_est" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('mat_est', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="item-contador">
+        <div class="linha-contador">
+          <span>Pet Cord</span>
+          <div class="contador-botoes">
+            <button class="btn-qtd" onclick="alterarQtd('mat_pet', -1)">-</button>
+            <span id="mat_pet" class="qtd-valor">00</span>
+            <button class="btn-qtd" onclick="alterarQtd('mat_pet', 1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DROPS -->
+      <div class="campo" style="margin-top: 15px;">
+        <label>Drop inicial:</label>
+        <input type="text" id="dropInicial" placeholder="Ex: 500" oninput="calcularDrop()">
+      </div>
+
+      <div class="campo">
+        <label>Drop Final:</label>
+        <input type="text" id="dropFinal" placeholder="Ex: 420" oninput="calcularDrop()">
+      </div>
+
+      <div class="campo">
+        <label>Drop Utilizado:</label>
+        <input type="text" id="dropUtilizado" readonly placeholder="Calculado automaticamente" style="background: #e9ecef;">
+      </div>
     </div>
   </div>
 
-  <div class="contador-container">
-    <span>Roteador 4.0</span>
-    <div class="contador-botoes">
-      <button class="btn-qtd" onclick="alterarQtd('rot40', -1)">-</button>
-      <span id="rot40" class="qtd-valor">00</span>
-      <button class="btn-qtd" onclick="alterarQtd('rot40', 1)">+</button>
-    </div>
+  <!-- AVISO OUTROS TIPOS -->
+  <div id="formOutros" class="secao" style="display: none; text-align: center; color: #6c757d;">
+    <p>Os campos para esta opção ainda não foram definidos.</p>
   </div>
 
-  <button class="btn-gerar" onclick="gerarTexto()">Gerar Relatório</button>
+  <button class="btn-gerar" onclick="gerarRelatorio()">Gerar Relatório</button>
 
   <div id="resultado" style="display:none;"></div>
   <button id="btnCopiar" class="btn-copiar" onclick="copiarTexto()">📋 Copiar Relatório</button>
 
   <script>
-    // Função para alterar contadores com dois dígitos (00, 01, 02...)
-    function alterarQtd(id, valor) {
-      const elemento = document.getElementById(id);
-      let atual = parseInt(elemento.innerText, 10);
-      atual += valor;
-      if (atual < 0) atual = 0;
-      elemento.innerText = atual.toString().padStart(2, '0');
-    }
+    let coordsGPS = "";
 
-    // Função de Geolocalização
-    function obterCoordenadas() {
-      const inputCoords = document.getElementById('coordenadas');
-      if ("geolocation" in navigator) {
-        inputCoords.value = "Obtendo localização...";
-        navigator.geolocation.getCurrentPosition(
-          (posicao) => {
-            const lat = posicao.coords.latitude.toFixed(6);
-            const lng = posicao.coords.longitude.toFixed(6);
-            inputCoords.value = `${lat}, ${lng}`;
-          },
-          (erro) => {
-            alert("Erro ao obter localização: " + erro.message);
-            inputCoords.value = "";
-          }
-        );
+    function alternarFormulario() {
+      const tipo = document.getElementById('tipoCabecalho').value;
+      if (tipo === 'INSTALAÇÃO') {
+        document.getElementById('formInstalacao').style.display = 'block';
+        document.getElementById('formOutros').style.display = 'none';
       } else {
-        alert("Geolocalização não é suportada pelo seu navegador.");
+        document.getElementById('formInstalacao').style.display = 'none';
+        document.getElementById('formOutros').style.display = 'block';
       }
     }
 
-    // Função principal para gerar a mensagem formatada
-    function gerarTexto() {
+    function alterarQtd(id, valor) {
+      const el = document.getElementById(id);
+      let num = parseInt(el.innerText, 10) + valor;
+      if (num < 0) num = 0;
+      el.innerText = num.toString().padStart(2, '0');
+    }
+
+    function obterCoordenadas() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            coordsGPS = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+            alert("Coordenadas obtidas com sucesso!");
+          },
+          (err) => alert("Erro ao obter coordenadas: " + err.message)
+        );
+      } else {
+        alert("Geolocalização não suportada no navegador.");
+      }
+    }
+
+    function toggleCoordManual() {
+      const chk = document.getElementById('chkManual').checked;
+      const input = document.getElementById('coordManual');
+      input.style.display = chk ? 'block' : 'none';
+    }
+
+    function calcularDrop() {
+      const ini = parseFloat(document.getElementById('dropInicial').value);
+      const fin = parseFloat(document.getElementById('dropFinal').value);
+      const res = document.getElementById('dropUtilizado');
+
+      if (!isNaN(ini) && !isNaN(fin)) {
+        res.value = (ini - fin) + " metros";
+      } else {
+        res.value = "";
+      }
+    }
+
+    function obterDataHoje() {
+      const hoje = new Date();
+      const dia = String(hoje.getDate()).padStart(2, '0');
+      const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+      const ano = hoje.getFullYear();
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function gerarRelatorio() {
+      const tipo = document.getElementById('tipoCabecalho').value;
+
+      if (tipo !== 'INSTALAÇÃO') {
+        alert('Selecione "Instalação" para gerar este modelo.');
+        return;
+      }
+
       const tecnico = document.getElementById('tecnico').value.trim();
       const auxiliar = document.getElementById('auxiliar').value.trim();
       const cliente = document.getElementById('cliente').value.trim();
       const endereco = document.getElementById('endereco').value.trim();
-      const coordenadas = document.getElementById('coordenadas').value.trim();
-      const obs = document.getElementById('obs').value;
-
-      const rot20 = document.getElementById('rot20').innerText;
-      const rot30 = document.getElementById('rot30').innerText;
-      const rot40 = document.getElementById('rot40').innerText;
-
-      let relatorio = `*SOLICITAÇÃO DE SERVIÇOS*\n`;
-      relatorio += `*Equipe:*\n`;
-      relatorio += `- Técnico: ${tecnico}\n`;
       
-      // Caso o Auxiliar fique em branco, a linha é omitida
+      // Coordenadas
+      const usaManual = document.getElementById('chkManual').checked;
+      const coordFinal = usaManual 
+        ? document.getElementById('coordManual').value.trim() 
+        : coordsGPS;
+
+      // Equipamentos
+      const getEquip = (idQtd, idObs) => {
+        const q = document.getElementById(idQtd).innerText;
+        const o = document.getElementById(idObs).value.trim();
+        return o ? `${q} - ${o}` : q;
+      };
+
+      // Montagem do Texto
+      let txt = `*${tipo}*\n\n`;
+      txt += `*Equipe:*\n`;
+      txt += `- Técnico: ${tecnico}\n`;
       if (auxiliar !== "") {
-        relatorio += `- Auxiliar: ${auxiliar}\n`;
+        txt += `- Auxiliar: ${auxiliar}\n`;
       }
 
-      relatorio += `\n*CLIENTE:* ${cliente}\n`;
-      relatorio += `\n*Endereço:* ${endereco}\n`;
-      relatorio += `\n*COORDENADAS:* ${coordenadas}\n`;
-      relatorio += `\n*OBS:* ${obs}\n`;
-      relatorio += `\n*Equipamentos:*\n`;
-      relatorio += `- Roteador 2.0 ( ${rot20} )\n`;
-      relatorio += `- Roteador 3.0 ( ${rot30} )\n`;
-      relatorio += `- Roteador 4.0 ( ${rot40} )`;
+      txt += `\n*Cliente:* ${cliente}\n`;
+      txt += `\n*Endereço:* ${endereco}\n`;
+      txt += `\n*Coordenadas:* ${coordFinal}\n`;
 
-      const divResultado = document.getElementById('resultado');
-      divResultado.innerText = relatorio;
-      divResultado.style.display = 'block';
+      txt += `\n*Equipamentos:*\n`;
+      txt += `- ONT: ( ${getEquip('ont_qtd', 'ont_obs')} )\n`;
+      txt += `- ONU: ( ${getEquip('onu_qtd', 'onu_obs')} )\n`;
+      txt += `- Roteador 2.0: ( ${getEquip('rot20_qtd', 'rot20_obs')} )\n`;
+      txt += `- Roteador 3.0: ( ${getEquip('rot30_qtd', 'rot30_obs')} )\n`;
+      txt += `- Roteador 4.0: ( ${getEquip('rot40_qtd', 'rot40_obs')} )\n`;
+
+      txt += `\n*Materiais:*\n`;
+      txt += `- Conector Verde: ${document.getElementById('mat_ver').innerText}\n`;
+      txt += `- Conector Azul: ${document.getElementById('mat_azu').innerText}\n`;
+      txt += `- Adesivo: ${document.getElementById('mat_ade').innerText}\n`;
+      txt += `- Fixa Fio: ${document.getElementById('mat_fix').innerText}\n`;
+      txt += `- Esticador: ${document.getElementById('mat_est').innerText}\n`;
+      txt += `- Pet Cord: ${document.getElementById('mat_pet').innerText}\n`;
+
+      txt += `\nDrop inicial: ${document.getElementById('dropInicial').value}\n`;
+      txt += `Drop Final: ${document.getElementById('dropFinal').value}\n`;
+      txt += `Drop Utilizado: ${document.getElementById('dropUtilizado').value}\n`;
+
+      txt += `\nData: ${obterDataHoje()}`;
+
+      const resDiv = document.getElementById('resultado');
+      resDiv.innerText = txt;
+      resDiv.style.display = 'block';
       document.getElementById('btnCopiar').style.display = 'block';
     }
 
-    // Função para copiar para a área de transferência
     function copiarTexto() {
       const texto = document.getElementById('resultado').innerText;
       navigator.clipboard.writeText(texto).then(() => {
