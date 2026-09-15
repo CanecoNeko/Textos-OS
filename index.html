@@ -146,17 +146,13 @@
 
         textarea {
             width: 100%;
-            height: 420px;
+            height: 480px;
             padding: 12px;
             border: 1px solid var(--border);
             border-radius: 6px;
             font-family: monospace;
             resize: vertical;
             white-space: pre-wrap;
-        }
-
-        .hidden {
-            display: none !important;
         }
 
         .checkbox-group {
@@ -291,7 +287,6 @@ function renderForm() {
     
     let html = ``;
 
-    // Serviço solicitado (apenas para Solicitação de Serviços)
     if (state.tipo === "Solicitação de Serviços") {
         html += `
         <div class="form-group">
@@ -303,7 +298,6 @@ function renderForm() {
         </div>`;
     }
 
-    // Equipe, Cliente, Endereço
     html += `
     <div class="form-group">
         <label>Técnico</label>
@@ -322,7 +316,6 @@ function renderForm() {
         <input type="text" value="${state.endereco}" oninput="state.endereco = this.value; generateText();">
     </div>`;
 
-    // Coordenadas
     html += `
     <div class="form-group">
         <label>Coordenadas</label>
@@ -334,7 +327,6 @@ function renderForm() {
         ${state.manualCoord ? `<input type="text" value="${state.coordenadas}" oninput="state.coordenadas = this.value; generateText();">` : ''}
     </div>`;
 
-    // Regras de exibição para Caixa, Porta e Potência
     const showCaixaPortaPot = state.tipo === "Instalação" || state.tipo === "Pendência" || 
         (state.tipo === "Solicitação de Serviços" && (state.servicoSolicitado === "Transferência" || state.servicoSolicitado === "Realocação de equipamento"));
 
@@ -358,7 +350,6 @@ function renderForm() {
         </div>`;
     }
 
-    // Observação
     html += `<div class="form-group"><label>Observação</label>`;
     if (state.tipo === "Pendência") {
         html += `
@@ -369,7 +360,6 @@ function renderForm() {
     }
     html += `<input type="text" value="${state.obsTexto}" oninput="state.obsTexto = this.value; generateText();"></div>`;
 
-    // Equipamentos
     let eqList = (state.tipo === "Solicitação de Serviços") ? 
         ["Roteador 2.0", "Roteador 3.0", "Roteador 4.0", "Outro"] : listaEquipamentosBase;
 
@@ -387,7 +377,6 @@ function renderForm() {
     });
     html += `</div>`;
 
-    // Materiais
     let matList = [...listaMateriaisBase];
     if (state.tipo === "Solicitação de Serviços") matList.splice(2, 0, "Conector Rj45");
     matList.push("Outro");
@@ -406,7 +395,6 @@ function renderForm() {
     });
     html += `</div>`;
 
-    // Metragem UTP
     if (state.tipo === "Solicitação de Serviços" && (state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede")) {
         html += `
         <div class="row form-group">
@@ -415,7 +403,6 @@ function renderForm() {
         </div>`;
     }
 
-    // Metragem Drop
     const showDrop = !(state.tipo === "Solicitação de Serviços" && 
         (state.servicoSolicitado === "Configuração de equipamento" || state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede"));
 
@@ -427,7 +414,6 @@ function renderForm() {
         </div>`;
     }
 
-    // Faturamento
     if (state.tipo === "Pendência" || state.tipo === "Solicitação de Serviços") {
         html += `
         <div class="checkbox-group">
@@ -480,26 +466,40 @@ function generateText() {
         txt += `${state.obsTexto}\n\n`;
     }
 
-    txt += `*Equipamentos:*\n\n`;
-    Object.keys(state.equipamentos).forEach(k => {
-        const eq = state.equipamentos[k];
-        if (eq.count > 0 || eq.text) {
-            let labelName = k === "Outro" ? (eq.text || "Outro") : k;
-            let extraText = k === "Outro" ? "" : (eq.text ? ` - ${eq.text}` : "");
-            txt += `${String(eq.count).padStart(2, '0')} - ${labelName}${extraText}\n`;
+    txt += `*Equipamentos:*\n`;
+    let eqList = (state.tipo === "Solicitação de Serviços") ? 
+        ["Roteador 2.0", "Roteador 3.0", "Roteador 4.0", "Outro"] : listaEquipamentosBase;
+
+    eqList.forEach(k => {
+        const eq = state.equipamentos[k] || { count: 0, text: "" };
+        const countStr = String(eq.count).padStart(2, '0');
+        const textVal = eq.text ? eq.text : "   ";
+        
+        if (k === "Outro") {
+            txt += `${countStr} - ${textVal}\n`;
+        } else {
+            txt += `${countStr} - ${k} ( ${textVal} )\n`;
         }
     });
-    txt += `\n*Materiais:*\n\n`;
-    Object.keys(state.materiais).forEach(k => {
-        const mat = state.materiais[k];
-        if (mat.count > 0 || (k === "Outro" && mat.text)) {
-            let labelName = k === "Outro" ? (mat.text || "Outro") : k;
-            txt += `${String(mat.count).padStart(2, '0')} - ${labelName}\n`;
+
+    txt += `\n*Materiais:*\n`;
+    let matList = [...listaMateriaisBase];
+    if (state.tipo === "Solicitação de Serviços") matList.splice(2, 0, "Conector Rj45");
+    matList.push("Outro");
+
+    matList.forEach(k => {
+        const mat = state.materiais[k] || { count: 0, text: "" };
+        const countStr = String(mat.count).padStart(2, '0');
+        
+        if (k === "Outro") {
+            let labelName = mat.text ? mat.text : "Outro";
+            txt += `${countStr} - ${labelName}\n`;
+        } else {
+            txt += `${countStr} - ${k}\n`;
         }
     });
     txt += `\n`;
 
-    // Regras Cabo UTP
     if (state.tipo === "Solicitação de Serviços" && (state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede")) {
         let init = parseFloat(state.utpInicial) || 0;
         let fin = parseFloat(state.utpFinal) || 0;
@@ -509,7 +509,6 @@ function generateText() {
         txt += `Cabo UTP utilizado: ${isNaN(diff) ? 0 : diff}\n\n`;
     }
 
-    // Regras Drop
     const showDrop = !(state.tipo === "Solicitação de Serviços" && 
         (state.servicoSolicitado === "Configuração de equipamento" || state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede"));
 
@@ -544,10 +543,9 @@ function enviarWhatsApp() {
     window.open(url, "_blank");
 }
 
-// Inicialização
 renderForm();
 generateText();
 </script>
 
 </body>
-</html>
+</html
