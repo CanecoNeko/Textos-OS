@@ -146,7 +146,7 @@
 
         textarea {
             width: 100%;
-            height: 480px;
+            height: 520px;
             padding: 12px;
             border: 1px solid var(--border);
             border-radius: 6px;
@@ -398,8 +398,8 @@ function renderForm() {
     if (state.tipo === "Solicitação de Serviços" && (state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede")) {
         html += `
         <div class="row form-group">
-            <div><label>Cabo UTP Inicial</label><input type="text" value="${state.utpInicial}" oninput="state.utpInicial = this.value; generateText();"></div>
-            <div><label>Cabo UTP Final</label><input type="text" value="${state.utpFinal}" oninput="state.utpFinal = this.value; generateText();"></div>
+            <div><label>Cabo UTP Inicial</label><input type="text" placeholder="00" value="${state.utpInicial}" oninput="state.utpInicial = this.value; generateText();"></div>
+            <div><label>Cabo UTP Final</label><input type="text" placeholder="00" value="${state.utpFinal}" oninput="state.utpFinal = this.value; generateText();"></div>
         </div>`;
     }
 
@@ -409,8 +409,8 @@ function renderForm() {
     if (showDrop) {
         html += `
         <div class="row form-group">
-            <div><label>Drop Inicial</label><input type="text" value="${state.dropInicial}" oninput="state.dropInicial = this.value; generateText();"></div>
-            <div><label>Drop Final</label><input type="text" value="${state.dropFinal}" oninput="state.dropFinal = this.value; generateText();"></div>
+            <div><label>Drop Inicial</label><input type="text" placeholder="00" value="${state.dropInicial}" oninput="state.dropInicial = this.value; generateText();"></div>
+            <div><label>Drop Final</label><input type="text" placeholder="00" value="${state.dropFinal}" oninput="state.dropFinal = this.value; generateText();"></div>
         </div>`;
     }
 
@@ -451,13 +451,11 @@ function generateText() {
         (state.tipo === "Solicitação de Serviços" && (state.servicoSolicitado === "Transferência" || state.servicoSolicitado === "Realocação de equipamento"));
 
     if (showCaixaPortaPot) {
-        // Formatação do campo Caixa (default: 000000)
         let cx = state.caixa.trim() !== "" ? state.caixa.trim() : "000000";
         txt += `*Caixa:* ${cx}\n`;
         
         txt += `*Porta:* ${String(state.porta).padStart(2, '0')}\n`;
         
-        // Formatação do campo Potência (default: -00)
         let pot = state.potencia.trim();
         if (pot === "") {
             pot = "-00";
@@ -474,9 +472,16 @@ function generateText() {
         txt += `${state.obsTexto}\n\n`;
     }
 
+    // --- EQUIPAMENTOS (Alinhamento Vertical de Parênteses) ---
     txt += `*Equipamentos:*\n`;
     let eqList = (state.tipo === "Solicitação de Serviços") ? 
         ["Roteador 2.0", "Roteador 3.0", "Roteador 4.0", "Outro"] : listaEquipamentosBase;
+
+    // Descobre o maior tamanho de nome de equipamento para alinhar
+    let maxEqNameLen = 0;
+    eqList.forEach(k => {
+        if (k !== "Outro" && k.length > maxEqNameLen) maxEqNameLen = k.length;
+    });
 
     eqList.forEach(k => {
         const eq = state.equipamentos[k] || { count: 0, text: "" };
@@ -486,14 +491,21 @@ function generateText() {
         if (k === "Outro") {
             txt += `${countStr} - ${textVal}\n`;
         } else {
-            txt += `${countStr} - ${k} ( ${textVal} )\n`;
+            let paddedName = k.padEnd(maxEqNameLen, ' ');
+            txt += `${countStr} - ${paddedName} ( ${textVal} )\n`;
         }
     });
 
+    // --- MATERIAIS (Alinhamento Vertical) ---
     txt += `\n*Materiais:*\n`;
     let matList = [...listaMateriaisBase];
     if (state.tipo === "Solicitação de Serviços") matList.splice(2, 0, "Conector Rj45");
     matList.push("Outro");
+
+    let maxMatNameLen = 0;
+    matList.forEach(k => {
+        if (k !== "Outro" && k.length > maxMatNameLen) maxMatNameLen = k.length;
+    });
 
     matList.forEach(k => {
         const mat = state.materiais[k] || { count: 0, text: "" };
@@ -503,30 +515,59 @@ function generateText() {
             let labelName = mat.text ? mat.text : "Outro";
             txt += `${countStr} - ${labelName}\n`;
         } else {
-            txt += `${countStr} - ${k}\n`;
+            let paddedName = k.padEnd(maxMatNameLen, ' ');
+            txt += `${countStr} - ${paddedName}\n`;
         }
     });
     txt += `\n`;
 
+    // --- CABO UTP (Alinhamento Vertical e Padrão 00) ---
     if (state.tipo === "Solicitação de Serviços" && (state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede")) {
-        let init = parseFloat(state.utpInicial) || 0;
-        let fin = parseFloat(state.utpFinal) || 0;
-        let diff = Math.abs(init - fin);
-        txt += `Cabo UTP inicial: ${state.utpInicial}\n`;
-        txt += `Cabo UTP final: ${state.utpFinal}\n`;
-        txt += `Cabo UTP utilizado: ${isNaN(diff) ? 0 : diff}\n\n`;
+        let utpInitStr = state.utpInicial.trim() !== "" ? state.utpInicial.trim() : "00";
+        let utpFinStr = state.utpFinal.trim() !== "" ? state.utpFinal.trim() : "00";
+
+        let initVal = parseFloat(state.utpInicial);
+        let finVal = parseFloat(state.utpFinal);
+        
+        let diffStr = "00";
+        if (!isNaN(initVal) && !isNaN(finVal)) {
+            diffStr = String(Math.abs(initVal - finVal)).padStart(2, '0');
+        }
+
+        // Alinhamento vertical dos rótulos
+        const labelInit = "*Cabo UTP inicial:*".padEnd(21, ' ');
+        const labelFin  = "*Cabo UTP final:*".padEnd(21, ' ');
+        const labelUtil = "*Cabo UTP utilizado:*".padEnd(21, ' ');
+
+        txt += `${labelInit} ${utpInitStr}\n`;
+        txt += `${labelFin} ${utpFinStr}\n`;
+        txt += `${labelUtil} ${diffStr}\n\n`;
     }
 
+// --- DROP (Alinhamento Vertical e Padrão 00) ---
     const showDrop = !(state.tipo === "Solicitação de Serviços" && 
         (state.servicoSolicitado === "Configuração de equipamento" || state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede"));
 
     if (showDrop) {
-        let init = parseFloat(state.dropInicial) || 0;
-        let fin = parseFloat(state.dropFinal) || 0;
-        let diff = init - fin;
-        txt += `Drop inicial: ${state.dropInicial}\n`;
-        txt += `Drop Final: ${state.dropFinal}\n`;
-        txt += `Drop Utilizado: ${isNaN(diff) ? 0 : diff}\n\n`;
+        let dropInitStr = state.dropInicial.trim() !== "" ? state.dropInicial.trim() : "00";
+        let dropFinStr = state.dropFinal.trim() !== "" ? state.dropFinal.trim() : "00";
+
+        let initVal = parseFloat(state.dropInicial);
+        let finVal = parseFloat(state.dropFinal);
+        
+        let diffStr = "00";
+        if (!isNaN(initVal) && !isNaN(finVal)) {
+            diffStr = String(initVal - finVal).padStart(2, '0');
+        }
+
+        // Alinhamento vertical dos rótulos
+        const labelInit = "*Drop inicial:*".padEnd(18, ' ');
+        const labelFin  = "*Drop final:*".padEnd(18, ' ');
+        const labelUtil = "*Drop utilizado:*".padEnd(18, ' ');
+
+        txt += `${labelInit} ${dropInitStr}\n`;
+        txt += `${labelFin} ${dropFinStr}\n`;
+        txt += `${labelUtil} ${diffStr}\n\n`;
     }
 
     if ((state.tipo === "Pendência" || state.tipo === "Solicitação de Serviços") && state.faturamento) {
