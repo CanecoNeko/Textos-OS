@@ -414,19 +414,18 @@ function renderForm() {
         </div>`;
     }
 
-    if (state.tipo === "Pendência" || state.tipo === "Solicitação de Serviços") {
+    // Faturamento agora disponível para todos os tipos (Instalação, Pendência, Solicitação de Serviços)
+    html += `
+    <div class="checkbox-group">
+        <input type="checkbox" id="fatCheck" ${state.faturamento ? 'checked' : ''} onchange="state.faturamento = this.checked; renderForm(); generateText();">
+        <label for="fatCheck" style="margin:0">Houve faturamento?</label>
+    </div>`;
+    if (state.faturamento) {
         html += `
-        <div class="checkbox-group">
-            <input type="checkbox" id="fatCheck" ${state.faturamento ? 'checked' : ''} onchange="state.faturamento = this.checked; renderForm(); generateText();">
-            <label for="fatCheck" style="margin:0">Houve faturamento?</label>
+        <div class="form-group">
+            <label>Valor Faturado</label>
+            <input type="text" value="${state.valorFaturado}" oninput="this.value = formatCurrency(this.value); state.valorFaturado = this.value; generateText();">
         </div>`;
-        if (state.faturamento) {
-            html += `
-            <div class="form-group">
-                <label>Valor Faturado</label>
-                <input type="text" value="${state.valorFaturado}" oninput="this.value = formatCurrency(this.value); state.valorFaturado = this.value; generateText();">
-            </div>`;
-        }
     }
 
     container.innerHTML = html;
@@ -477,7 +476,6 @@ function generateText() {
     let eqList = (state.tipo === "Solicitação de Serviços") ? 
         ["Roteador 2.0", "Roteador 3.0", "Roteador 4.0", "Outro"] : listaEquipamentosBase;
 
-    // Descobre o maior tamanho de nome de equipamento para alinhar
     let maxEqNameLen = 0;
     eqList.forEach(k => {
         if (k !== "Outro" && k.length > maxEqNameLen) maxEqNameLen = k.length;
@@ -521,7 +519,7 @@ function generateText() {
     });
     txt += `\n`;
 
-    // --- CABO UTP (Alinhamento Vertical e Padrão 00) ---
+    // --- CABO UTP ---
     if (state.tipo === "Solicitação de Serviços" && (state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede")) {
         let utpInitStr = state.utpInicial.trim() !== "" ? state.utpInicial.trim() : "00";
         let utpFinStr = state.utpFinal.trim() !== "" ? state.utpFinal.trim() : "00";
@@ -534,7 +532,6 @@ function generateText() {
             diffStr = String(Math.abs(initVal - finVal)).padStart(2, '0');
         }
 
-        // Alinhamento vertical dos rótulos
         const labelInit = "*Cabo UTP inicial:*".padEnd(21, ' ');
         const labelFin  = "*Cabo UTP final:*".padEnd(21, ' ');
         const labelUtil = "*Cabo UTP utilizado:*".padEnd(21, ' ');
@@ -544,7 +541,7 @@ function generateText() {
         txt += `${labelUtil} ${diffStr}\n\n`;
     }
 
-// --- DROP (Alinhamento Vertical e Padrão 00) ---
+    // --- DROP ---
     const showDrop = !(state.tipo === "Solicitação de Serviços" && 
         (state.servicoSolicitado === "Configuração de equipamento" || state.servicoSolicitado === "Repetidor" || state.servicoSolicitado === "Cabo de rede"));
 
@@ -560,7 +557,6 @@ function generateText() {
             diffStr = String(initVal - finVal).padStart(2, '0');
         }
 
-        // Alinhamento vertical dos rótulos
         const labelInit = "*Drop inicial:*".padEnd(18, ' ');
         const labelFin  = "*Drop final:*".padEnd(18, ' ');
         const labelUtil = "*Drop utilizado:*".padEnd(18, ' ');
@@ -570,7 +566,7 @@ function generateText() {
         txt += `${labelUtil} ${diffStr}\n\n`;
     }
 
-    if ((state.tipo === "Pendência" || state.tipo === "Solicitação de Serviços") && state.faturamento) {
+    if (state.faturamento) {
         txt += `*Valor faturado:* ${state.valorFaturado}\n\n`;
     }
 
