@@ -334,7 +334,7 @@ function renderForm() {
         html += `
         <div class="form-group">
             <label>Caixa</label>
-            <input type="text" value="${state.caixa}" oninput="state.caixa = this.value; generateText();">
+            <input type="text" value="${state.caixa}" placeholder="000000" oninput="state.caixa = this.value; generateText();">
         </div>
         <div class="form-group">
             <label>Porta (00 a 16)</label>
@@ -346,7 +346,7 @@ function renderForm() {
         </div>
         <div class="form-group">
             <label>Potência final</label>
-            <input type="text" value="${state.potencia}" oninput="state.potencia = this.value; generateText();">
+            <input type="text" value="${state.potencia}" placeholder="-00" oninput="state.potencia = this.value; generateText();">
         </div>`;
     }
 
@@ -451,11 +451,19 @@ function generateText() {
         (state.tipo === "Solicitação de Serviços" && (state.servicoSolicitado === "Transferência" || state.servicoSolicitado === "Realocação de equipamento"));
 
     if (showCaixaPortaPot) {
-        txt += `*Caixa:* ${state.caixa}\n`;
+        // Formatação do campo Caixa (default: 000000)
+        let cx = state.caixa.trim() !== "" ? state.caixa.trim() : "000000";
+        txt += `*Caixa:* ${cx}\n`;
+        
         txt += `*Porta:* ${String(state.porta).padStart(2, '0')}\n`;
         
+        // Formatação do campo Potência (default: -00)
         let pot = state.potencia.trim();
-        if (pot !== "" && !pot.startsWith("-")) pot = "-" + pot;
+        if (pot === "") {
+            pot = "-00";
+        } else if (!pot.startsWith("-")) {
+            pot = "-" + pot;
+        }
         txt += `*Potência final:* ${pot}\n\n`;
     }
 
@@ -548,4 +556,4 @@ generateText();
 </script>
 
 </body>
-</html
+</html>
