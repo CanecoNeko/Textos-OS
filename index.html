@@ -248,69 +248,75 @@
     <div class="secao">
       <div class="titulo-secao">Materiais & Drop</div>
       
+      <!-- Conector Verde -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Conector Verde</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('mat_ver', -1)">-</button>
             <span id="mat_ver" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('mat_ver', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Conector Verde -</span>
         </div>
       </div>
 
+      <!-- Conector Azul -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Conector Azul</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('mat_azu', -1)">-</button>
             <span id="mat_azu" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('mat_azu', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Conector Azul -</span>
         </div>
       </div>
 
+      <!-- Adesivo -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Adesivo</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('mat_ade', -1)">-</button>
             <span id="mat_ade" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('mat_ade', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Adesivo -</span>
         </div>
       </div>
 
+      <!-- Fixa Fio -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Fixa Fio</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('mat_fix', -1)">-</button>
             <span id="mat_fix" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('mat_fix', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Fixa Fio -</span>
         </div>
       </div>
 
+      <!-- Esticador -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Esticador</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('mat_est', -1)">-</button>
             <span id="mat_est" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('mat_est', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Esticador -</span>
         </div>
       </div>
 
+      <!-- Pet Cord -->
       <div class="item-contador">
         <div class="linha-contador">
-          <span>Pet Cord</span>
           <div class="contador-botoes">
             <button class="btn-qtd" onclick="alterarQtd('mat_pet', -1)">-</button>
             <span id="mat_pet" class="qtd-valor">00</span>
             <button class="btn-qtd" onclick="alterarQtd('mat_pet', 1)">+</button>
           </div>
+          <span style="font-weight: bold;">- Pet Cord -</span>
         </div>
       </div>
 
@@ -422,11 +428,17 @@
         ? document.getElementById('coordManual').value.trim() 
         : coordsGPS;
 
-      // Monta a linha do equipamento no padrão: ( 00 ) - NOME - ( OBS )
+      // Monta a linha do equipamento no padrão: ( 00 ) - NOME ( OBS )
       const getEquipLinha = (nome, idQtd, idObs) => {
         const q = document.getElementById(idQtd).innerText;
         const o = document.getElementById(idObs).value.trim();
         return `( ${q} ) - ${nome} ( ${o} )`;
+      };
+
+      // Monta a linha do material no padrão: ( 00 ) - NOME
+      const getMaterialLinha = (nome, idQtd) => {
+        const q = document.getElementById(idQtd).innerText;
+        return `( ${q} ) - ${nome}`;
       };
 
       // Montagem do Texto
@@ -449,12 +461,12 @@
       txt += `${getEquipLinha('Roteador 4.0', 'rot40_qtd', 'rot40_obs')}\n`;
 
       txt += `\n*Materiais:*\n`;
-      txt += `- Conector Verde: ${document.getElementById('mat_ver').innerText}\n`;
-      txt += `- Conector Azul: ${document.getElementById('mat_azu').innerText}\n`;
-      txt += `- Adesivo: ${document.getElementById('mat_ade').innerText}\n`;
-      txt += `- Fixa Fio: ${document.getElementById('mat_fix').innerText}\n`;
-      txt += `- Esticador: ${document.getElementById('mat_est').innerText}\n`;
-      txt += `- Pet Cord: ${document.getElementById('mat_pet').innerText}\n`;
+      txt += `${getMaterialLinha('Conector Verde', 'mat_ver')}\n`;
+      txt += `${getMaterialLinha('Conector Azul', 'mat_azu')}\n`;
+      txt += `${getMaterialLinha('Adesivo', 'mat_ade')}\n`;
+      txt += `${getMaterialLinha('Fixa Fio', 'mat_fix')}\n`;
+      txt += `${getMaterialLinha('Esticador', 'mat_est')}\n`;
+      txt += `${getMaterialLinha('Pet Cord', 'mat_pet')}\n`;
 
       txt += `\nDrop inicial: ${document.getElementById('dropInicial').value}\n`;
       txt += `Drop Final: ${document.getElementById('dropFinal').value}\n`;
@@ -477,5 +489,5 @@
   </script>
 
 </body>
-        </html>
-          
+            </html>
+            
