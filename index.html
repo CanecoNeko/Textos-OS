@@ -270,7 +270,9 @@ const state = {
     obsLista: "Troca do conector interno",
     obsTexto: "",
     equipamentos: {},
+    outrosEquipamentos: [{ count: 0, text: "" }],
     materiais: {},
+    outrosMateriais: [{ count: 0, text: "" }],
     dropInicial: "",
     dropFinal: "",
     utpInicial: "",
@@ -305,6 +307,34 @@ function updateCounter(type, item, delta, min = 0, max = 99) {
         renderForm();
         generateText();
     }
+}
+
+function updateOutroCounter(listName, index, delta) {
+    let newVal = state[listName][index].count + delta;
+    if (newVal >= 0 && newVal <= 99) {
+        state[listName][index].count = newVal;
+        renderForm();
+        generateText();
+    }
+}
+
+function handleOutroInput(listName, index, val) {
+    state[listName][index].text = val;
+    
+    // Se digitou algo no último item da lista, cria um novo campo abaixo
+    if (index === state[listName].length - 1 && val.trim() !== "") {
+        state[listName].push({ count: 0, text: "" });
+    }
+    
+    // Se limpou o campo e não for o único, podemos remover os campos vazios excedentes no final
+    while (state[listName].length > 1 && 
+           state[listName][state[listName].length - 1].text.trim() === "" && 
+           state[listName][state[listName].length - 2].text.trim() === "") {
+        state[listName].pop();
+    }
+
+    renderForm();
+    generateText();
 }
 
 function updatePorta(delta) {
@@ -411,7 +441,7 @@ function renderForm() {
     html += `<input type="text" value="${state.obsTexto}" oninput="state.obsTexto = this.value; generateText();"></div>`;
 
     let eqList = (state.tipo === "Solicitação de Serviços") ? 
-        ["Roteador 2.0", "Roteador 3.0", "Roteador 4.0", "Outro"] : listaEquipamentosBase;
+        ["Roteador 2.0", "Roteador 3.0", "Roteador 4.0"] : listaEquipamentosBase;
 
     html += `<div class="form-group"><label>Equipamentos</label>`;
     eqList.forEach(eq => {
@@ -425,11 +455,21 @@ function renderForm() {
             <input type="text" style="flex:1" placeholder="Info/SÉRIE" value="${state.equipamentos[eq].text}" oninput="state.equipamentos['${eq}'].text = this.value; generateText();">
         </div>`;
     });
+
+    // Renderiza Dinamicamente os Campos de "Outro" Equipamento
+    state.outrosEquipamentos.forEach((item, index) => {
+        html += `
+        <div class="counter-group">
+            <button class="counter-btn" onclick="updateOutroCounter('outrosEquipamentos', ${index}, -1)">-</button>
+            <span class="counter-value">${String(item.count).padStart(2, '0')}</span>
+            <button class="counter-btn" onclick="updateOutroCounter('outrosEquipamentos', ${index}, 1)">+</button>
+            <input type="text" style="flex:1" placeholder="Outro equipamento" value="${item.text}" oninput="handleOutroInput('outrosEquipamentos', ${index}, this.value)">
+        </div>`;
+    });
     html += `</div>`;
 
     let matList = [...listaMateriaisBase];
     if (state.tipo === "Solicitação de Serviços") matList.splice(2, 0, "Conector Rj45");
-    matList.push("Outro");
 
     html += `<div class="form-group"><label>Materiais</label>`;
     matList.forEach(mat => {
@@ -439,8 +479,18 @@ function renderForm() {
             <button class="counter-btn" onclick="updateCounter('materiais', '${mat}', -1)">-</button>
             <span class="counter-value">${String(state.materiais[mat].count).padStart(2, '0')}</span>
             <button class="counter-btn" onclick="updateCounter('materiais', '${mat}', 1)">+</button>
-            <span style="font-size:0.9rem; min-width: 90px;">${mat === 'Outro' ? 'Outro' : mat}</span>
-            ${mat === 'Outro' ? `<input type="text" style="flex:1" placeholder="Nome do Material" value="${state.materiais[mat].text}" oninput="state.materiais['${mat}'].text = this.value; generateText();">` : ''}
+            <span style="font-size:0.9rem; min-width: 90px;">${mat}</span>
+        </div>`;
+    });
+
+    // Renderiza Dinamicamente os Campos de "Outro" Material
+    state.outrosMateriais.forEach((item, index) => {
+        html += `
+        <div class="counter-group">
+            <button class="counter-btn" onclick="updateOutroCounter('outrosMateriais', ${index}, -1)">-</button>
+            <span class="counter-value">${String(item.count).padStart(2, '0')}</span>
+            <button class="counter-btn" onclick="updateOutroCounter('outrosMateriais', ${index}, 1)">+</button>
+            <input type="text" style="flex:1" placeholder="Outro material" value="${item.text}" oninput="handleOutroInput('outrosMateriais', ${index}, this.value)">
         </div>`;
     });
     html += `</div>`;
@@ -494,7 +544,6 @@ function generateText() {
     txt += `\n*Cliente:* ${state.cliente}\n\n`;
     txt += `*Endereço:* ${state.endereco}\n\n`;
     
-    // --- LÓGICA DE COORDENADAS ATUALIZADA ---
     if (state.coordenadas.trim() !== "") {
         const coordsClean = state.coordenadas.replace(/\s+/g, '');
         txt += `*Coordenadas:* https://www.google.com/maps?q=${coordsClean}\n\n`;
@@ -530,23 +579,26 @@ function generateText() {
     // --- EQUIPAMENTOS ---
     txt += `*Equipamentos:*\n`;
     let eqList = (state.tipo === "Solicitação de Serviços") ? 
-        ["Roteador 2.0", "Roteador 3.0", "Roteador 4.0", "Outro"] : listaEquipamentosBase;
+        ["Roteador 2.0", "Roteador 3.0", "Roteador 4.0"] : listaEquipamentosBase;
 
     let maxEqNameLen = 0;
     eqList.forEach(k => {
-        if (k !== "Outro" && k.length > maxEqNameLen) maxEqNameLen = k.length;
+        if (k.length > maxEqNameLen) maxEqNameLen = k.length;
     });
 
     eqList.forEach(k => {
         const eq = state.equipamentos[k] || { count: 0, text: "" };
         const countStr = String(eq.count).padStart(2, '0');
         const textVal = eq.text ? eq.text : "   ";
-        
-        if (k === "Outro") {
-            txt += `${countStr} - ${textVal}\n`;
-        } else {
-            let paddedName = k.padEnd(maxEqNameLen, ' ');
-            txt += `${countStr} - ${paddedName} ( ${textVal} )\n`;
+        let paddedName = k.padEnd(maxEqNameLen, ' ');
+        txt += `${countStr} - ${paddedName} ( ${textVal} )\n`;
+    });
+
+    state.outrosEquipamentos.forEach(item => {
+        if (item.text.trim() !== "" || item.count > 0) {
+            const countStr = String(item.count).padStart(2, '0');
+            const label = item.text.trim() !== "" ? item.text : "Outro";
+            txt += `${countStr} - ${label}\n`;
         }
     });
 
@@ -554,23 +606,24 @@ function generateText() {
     txt += `\n*Materiais:*\n`;
     let matList = [...listaMateriaisBase];
     if (state.tipo === "Solicitação de Serviços") matList.splice(2, 0, "Conector Rj45");
-    matList.push("Outro");
 
     let maxMatNameLen = 0;
     matList.forEach(k => {
-        if (k !== "Outro" && k.length > maxMatNameLen) maxMatNameLen = k.length;
+        if (k.length > maxMatNameLen) maxMatNameLen = k.length;
     });
 
     matList.forEach(k => {
         const mat = state.materiais[k] || { count: 0, text: "" };
         const countStr = String(mat.count).padStart(2, '0');
-        
-        if (k === "Outro") {
-            let labelName = mat.text ? mat.text : "Outro";
-            txt += `${countStr} - ${labelName}\n`;
-        } else {
-            let paddedName = k.padEnd(maxMatNameLen, ' ');
-            txt += `${countStr} - ${paddedName}\n`;
+        let paddedName = k.padEnd(maxMatNameLen, ' ');
+        txt += `${countStr} - ${paddedName}\n`;
+    });
+
+    state.outrosMateriais.forEach(item => {
+        if (item.text.trim() !== "" || item.count > 0) {
+            const countStr = String(item.count).padStart(2, '0');
+            const label = item.text.trim() !== "" ? item.text : "Outro";
+            txt += `${countStr} - ${label}\n`;
         }
     });
     txt += `\n`;
@@ -657,4 +710,4 @@ generateText();
 </script>
 
 </body>
-</html
+</html>
